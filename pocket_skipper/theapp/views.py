@@ -13,10 +13,13 @@ from django.http import HttpResponse, Http404, HttpResponseBadRequest
 POCKET_OAUTH_REQUEST_URL = "https://getpocket.com/v3/oauth/request"
 POCKET_OAUTH_AUTHORIZE_URL = "https://getpocket.com/v3/oauth/authorize"
 POCKET_OAUTH_GET_ALL_URL = "https://getpocket.com/v3/get"
+POCKET_OAUTH_ARCHIVE_URL = "https://getpocket.com/v3/send?actions=%s&access_token=%s&consumer_key=%s"
+                            # % (json_url_encoded_action, access_token, consumer_key)
 
+POCKET_OAUTH_CONSUMER_KEY = "PUT YOUR OWN"
 
-POCKET_OAUTH_CONSUMER_KEY = "10625-7e674511c10dbd2576cd84f9"
-POCKET_REDIRECT_URL = "http://%s/skipper" # % domain_url
+POCKET_SKIPPER_BASE_URL = "pocket_skipper"
+POCKET_REDIRECT_URL = "http://%s/" + POCKET_SKIPPER_BASE_URL + "/skipper" # % domain_url
 
 g_pocket_code = None
 
@@ -51,13 +54,22 @@ def landing(request):
     return shortcuts.redirect(auth_url)
 
 def skipper(request):
-    data = {"code" : g_pocket_code,
-            "consumer_key" : POCKET_OAUTH_CONSUMER_KEY}
-    content, response = _post(POCKET_OAUTH_AUTHORIZE_URL, data)
+    if "token" in request.session:
+        token = request.session["token"]
     
-    actual_response = dict(urlparse.parse_qsl(response))
-    token = actual_response["access_token"]
-    username = actual_response["username"]
+    else:
+        try:
+            data = {"code" : g_pocket_code,
+                    "consumer_key" : POCKET_OAUTH_CONSUMER_KEY}
+            content, response = _post(POCKET_OAUTH_AUTHORIZE_URL, data)
+            
+            actual_response = dict(urlparse.parse_qsl(response))
+            token = actual_response["access_token"]
+            username = actual_response["username"]
+            
+            request.session["token"] = token
+        except:   
+            return shortcuts.redirect("/pocket")
     
     data = {"access_token" : token,
             "consumer_key" : POCKET_OAUTH_CONSUMER_KEY}
@@ -69,7 +81,12 @@ def skipper(request):
     html = ""
     
     for item in reading_list.values():
-        html += "<a href='%s'>%s</a><br>" % (item["given_url"], item["given_title"])
+        actions = [{"action" : "archive",
+                    "item_id" : item["item_id"],}]
+        action_json = json.dumps(actions)
+        
+        archive_url = POCKET_OAUTH_ARCHIVE_URL % (action_json, token, POCKET_OAUTH_CONSUMER_KEY)
+        html += "<a href='%s'>%s</a> -- <a href='%s'>Mark As Read</a><br>" % (item["given_url"], item["given_title"], archive_url)
     
     
     return HttpResponse(html)
