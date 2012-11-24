@@ -18,7 +18,7 @@
         <style>
             body
             {
-                background-image: url(ricepaper2.png);
+                background-image: url(/img/ricepaper2.png);
                 width: 90%;
                 margin: auto;
             }
@@ -33,7 +33,7 @@
             
             #items > .item:nth-child(even)
             {
-                background-image: url(skelatal_weave.png);
+                background-image: url(/img/skelatal_weave.png);
                 
             }
             
@@ -108,7 +108,7 @@
 		
 		body
 		{
-		    background-image: url(ricepaper2.png);
+		    background-image: url(/img/ricepaper2.png);
 		    width: 100%;
 		    margin: auto;
 		}
@@ -121,7 +121,7 @@
 	    {
 		//Update the image to a spinner and change text:
 		var whole_div = $("#div_" + what.id);
-		whole_div.find("img").attr("src", "spinner.gif");
+		whole_div.find("img").attr("src", "/img/spinner.gif");
 		whole_div.find(".mark_as_read_text").text("Marking");
 		
 		Dajaxice.theapp.mark_as_read(post_mark, {"item_id" : what.id});
@@ -134,7 +134,7 @@
 		{
 		    alert("Problem marking item as read. Try again later.\n" + data.error);
 		    //Return everything to starting state:
-		    whole_div.find("img").attr("src", "tick.png");
+		    whole_div.find("img").attr("src", "/img/tick.png");
 		    whole_div.find(".mark_as_read_text").text("Mark As Read");
 		    return;
 		}
@@ -160,11 +160,11 @@
             <div class="item" id='div_{{ item.item_id }}'>
 		<span class="st_line_wrap">
 		    <span class="st_line"></span>
-		    <a href="{{ item.given_url }}">{{ item.given_title }}</a>
+		    <a href="{{ item.given_url }}">{{ item.resolved_title }}</a>
                 </span>
 		
 		<span class="mark_as_read_span" id="{{ item.item_id }}" onclick="mark_as_read(this);">
-		    <img src="tick.png" class="mark_as_read_image"/>
+		    <img src="/img/tick.png" class="mark_as_read_image"/>
 		    <span class="mark_as_read_text">Mark As Read</span>
 		</span>
             </div>
