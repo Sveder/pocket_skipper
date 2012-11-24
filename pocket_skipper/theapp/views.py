@@ -13,13 +13,11 @@ from django.http import HttpResponse, Http404, HttpResponseBadRequest
 POCKET_OAUTH_REQUEST_URL = "https://getpocket.com/v3/oauth/request"
 POCKET_OAUTH_AUTHORIZE_URL = "https://getpocket.com/v3/oauth/authorize"
 POCKET_OAUTH_GET_ALL_URL = "https://getpocket.com/v3/get"
-POCKET_OAUTH_ARCHIVE_URL = "https://getpocket.com/v3/send?actions=%s&access_token=%s&consumer_key=%s"
-                            # % (json_url_encoded_action, access_token, consumer_key)
+POCKET_OAUTH_ARCHIVE_URL = "https://getpocket.com/v3/send?%s"
 
 POCKET_OAUTH_CONSUMER_KEY = "PUT YOUR OWN"
 
-POCKET_SKIPPER_BASE_URL = "pocket_skipper"
-POCKET_REDIRECT_URL = "http://%s/" + POCKET_SKIPPER_BASE_URL + "/skipper" # % domain_url
+POCKET_REDIRECT_URL = "http://%s/skipper" # % domain_url
 
 g_pocket_code = None
 
@@ -53,10 +51,13 @@ def landing(request):
     auth_url = "https://getpocket.com/auth/authorize?request_token=%s&redirect_uri=%s" % (g_pocket_code, redirect_url)
     return shortcuts.redirect(auth_url)
 
+
 def skipper(request):
+    #If he has a token in his session use that:
     if "token" in request.session:
         token = request.session["token"]
     
+    #Try to reauth the user if there isn't a token:
     else:
         try:
             data = {"code" : g_pocket_code,
@@ -68,9 +69,11 @@ def skipper(request):
             username = actual_response["username"]
             
             request.session["token"] = token
-        except:   
+        except:
+            #Finally fail and ask him to auth:
             return shortcuts.redirect("/pocket")
     
+    #Get the item list:
     data = {"access_token" : token,
             "consumer_key" : POCKET_OAUTH_CONSUMER_KEY}
     content, response = _post(POCKET_OAUTH_GET_ALL_URL, data)
@@ -78,15 +81,12 @@ def skipper(request):
     reading_list_data = json.loads(response)
     reading_list = reading_list_data["list"]
     
-    html = ""
+    items = reading_list.values()
+    #Sort by date:
+    items.sort(cmp=lambda one, two: 1 if one["time_added"] < two["time_added"] else -1)
     
-    for item in reading_list.values():
-        actions = [{"action" : "archive",
-                    "item_id" : item["item_id"],}]
-        action_json = json.dumps(actions)
-        
-        archive_url = POCKET_OAUTH_ARCHIVE_URL % (action_json, token, POCKET_OAUTH_CONSUMER_KEY)
-        html += "<a href='%s'>%s</a> -- <a href='%s'>Mark As Read</a><br>" % (item["given_url"], item["given_title"], archive_url)
-    
-    
-    return HttpResponse(html)
+    t = loader.get_template("list.html")
+    c = RequestContext(request, {"items" : items})
+    return HttpResponse(t.render(c))
+
+

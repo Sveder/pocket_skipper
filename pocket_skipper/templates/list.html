@@ -1,0 +1,179 @@
+{% load dajaxice_templatetags %}
+<!doctype html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>Pocket Skipper - Skip Pocket's Article View and Get Straight to the Original</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<meta name="viewport" content="width=device-width">
+	    
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+
+	{% dajaxice_js_import %}
+	
+        <style>
+            body
+            {
+                background-image: url(ricepaper2.png);
+                width: 90%;
+                margin: auto;
+            }
+            
+            #items
+            {
+                display: table;
+                
+                border-radius: 5px;
+                padding: 20px;
+            }
+            
+            #items > .item:nth-child(even)
+            {
+                background-image: url(skelatal_weave.png);
+                
+            }
+            
+            #items > .item:nth-child(odd)
+            {
+                background-image: url();
+                
+            }
+            
+            .item
+            {
+                display: table-row;
+            }
+            
+            .item > *
+            {
+                display: table-cell;
+                padding: 3px 7px 3px 7px;
+            }
+            
+            .mark_as_read_text
+            {
+		vertical-align: bottom;
+		padding-left: 4px;
+            }
+	    
+	    .mark_as_read_image
+	    {
+		vertical-align: bottom;		
+	    }
+	    
+	    .mark_as_read_span
+	    {
+		cursor: pointer;
+		min-width: 140px;
+	    }
+	    
+	    /* Strike through animation */
+	    .st_line_wrap
+	    {
+		position:relative;
+		display:inline-block;        
+	    }
+	    
+	    .st_line
+	    {
+		display:inline-block;
+		position:absolute;
+		left:0;
+		top:50%;
+		width:0;
+		border-top:1px solid grey;
+		
+		transition: width 0.75s ease-in;
+		-moz-transition: width 0.75s ease-in;
+		-webkit-transition: width 0.75s ease-in;
+		-o-transition: width 0.75s ease-in;
+	    }
+	    
+	    /* Some niceties for people on phones */
+	    @media (max-width: 560px)
+	    {
+		.mark_as_read_span
+		{
+		    cursor: pointer;
+		    min-width: 0px;
+		}
+		.mark_as_read_text
+                {
+		    display: none;
+		}
+		
+		body
+		{
+		    background-image: url(ricepaper2.png);
+		    width: 100%;
+		    margin: auto;
+		}
+	    }
+	    
+        </style>
+	
+	<script>
+	    function mark_as_read(what)
+	    {
+		//Update the image to a spinner and change text:
+		var whole_div = $("#div_" + what.id);
+		whole_div.find("img").attr("src", "spinner.gif");
+		whole_div.find(".mark_as_read_text").text("Marking");
+		
+		Dajaxice.theapp.mark_as_read(post_mark, {"item_id" : what.id});
+	    }
+	    
+	    function post_mark(data)
+	    {
+		var whole_div = $("#div_" + data.id);
+		if (data.error)
+		{
+		    alert("Problem marking item as read. Try again later.\n" + data.error);
+		    //Return everything to starting state:
+		    whole_div.find("img").attr("src", "tick.png");
+		    whole_div.find(".mark_as_read_text").text("Mark As Read");
+		    return;
+		}
+		
+		whole_div.find(".st_line").css("width", "100%");
+		whole_div.find("a").animate({"color" : "red"}, 750, function(){
+			whole_div.fadeOut();		    
+		    });
+	    }
+	    
+	</script>
+	
+</head>
+<body>
+    <div id="welcome">
+        <h2>An alternate <a href="http://getpocket.com">Pocket</a> (Read it later) reading list that takes you to the actual article on the first
+	click. Made with love by <a href="https://twitter.com/msveder">@msveder</a></h2>
+    </div>
+    
+    <div id="items">
+        {% for item in items %}
+	
+            <div class="item" id='div_{{ item.item_id }}'>
+		<span class="st_line_wrap">
+		    <span class="st_line"></span>
+		    <a href="{{ item.given_url }}">{{ item.given_title }}</a>
+                </span>
+		
+		<span class="mark_as_read_span" id="{{ item.item_id }}" onclick="mark_as_read(this);">
+		    <img src="tick.png" class="mark_as_read_image"/>
+		    <span class="mark_as_read_text">Mark As Read</span>
+		</span>
+            </div>
+	    
+        {% endfor %}
+        
+    </div>
+    
+  
+</body>
+</html>
+
