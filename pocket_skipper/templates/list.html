@@ -93,6 +93,13 @@
 		-o-transition: width 0.75s ease-in;
 	    }
 	    
+	    .fav
+	    {
+		margin-left: 10px;
+		margin-right: 10px;
+		color: red;
+	    }
+	    
 	    /* Some niceties for people on phones */
 	    @media (max-width: 560px)
 	    {
@@ -112,13 +119,24 @@
 		    width: 100%;
 		    margin: auto;
 		}
+		
+		#welcome
+		{
+		    margin-left: 10px;
+		    margin-right: 10px;
+		}
 	    }
+	    
+	    
 	    
         </style>
 	
 	<script>
+	    
 	    function mark_as_read(what)
 	    {
+		_gaq.push(['_trackEvent', "Mark As Read", 'clicked', ""]);
+		
 		//Update the image to a spinner and change text:
 		var whole_div = $("#div_" + what.id);
 		whole_div.find("img").attr("src", "/img/spinner.gif");
@@ -132,6 +150,7 @@
 		var whole_div = $("#div_" + data.id);
 		if (data.error)
 		{
+		    _gaq.push(['_trackEvent', "Failed marking as read", 'clicked', ""]);
 		    alert("Problem marking item as read. Try again later.\n" + data.error);
 		    //Return everything to starting state:
 		    whole_div.find("img").attr("src", "/img/tick.png");
@@ -144,14 +163,27 @@
 			whole_div.fadeOut();		    
 		    });
 	    }
-	    
+	    	    
+	</script>
+	<script type="text/javascript">
+
+	    var _gaq = _gaq || [];
+	    _gaq.push(['_setAccount', 'UA-36750334-1']);
+	    _gaq.push(['_trackPageview']);
+	  
+	    (function() {
+	      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	    })();
+	  
 	</script>
 	
 </head>
 <body>
     <div id="welcome">
         <h2>An alternate <a href="http://getpocket.com">Pocket</a> (Read it later) reading list that takes you to the actual article on the first
-	click. Made with love by <a href="https://twitter.com/msveder">@msveder</a></h2>
+	click (instead of Pocket's "article view"). Made with love by <a href="https://twitter.com/msveder">@msveder</a></h2>
     </div>
     
     <div id="items">
@@ -160,7 +192,7 @@
             <div class="item" id='div_{{ item.item_id }}'>
 		<span class="st_line_wrap">
 		    <span class="st_line"></span>
-		    <a href="{{ item.given_url }}">{{ item.resolved_title }}</a>
+		    <a href="{{ item.given_url }}" target="_blank">{{ item.resolved_title }}</a>
                 </span>
 		
 		<span class="mark_as_read_span" id="{{ item.item_id }}" onclick="mark_as_read(this);">
@@ -173,6 +205,10 @@
         
     </div>
     
+    
+    <div class="fav">
+	Don't forget to add this to favourites for future use (Press CTRL-D).
+    </div>
   
 </body>
 </html>

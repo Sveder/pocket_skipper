@@ -15,7 +15,8 @@ urlpatterns = patterns('',
     
     url(r'^pocket$', 'theapp.views.landing', name='landing'),
     url(r'^skipper$', 'theapp.views.skipper', name='skipper'),
-    url(r'^$', redirect_to, {"url" : "/pocket"}),
+    
+    url(r'^$', 'theapp.views.home', name='home'),
     
 
     (r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),

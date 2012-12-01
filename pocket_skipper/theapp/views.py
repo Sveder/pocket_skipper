@@ -46,7 +46,6 @@ def landing(request):
     
     pocket_code = dict(urlparse.parse_qsl(response))["code"]
     request.session["pocket_code"] = pocket_code
-    
     auth_url = "https://getpocket.com/auth/authorize?request_token=%s&redirect_uri=%s" % (pocket_code, redirect_url)
     return shortcuts.redirect(auth_url)
 
@@ -79,7 +78,12 @@ def skipper(request):
     data = {"access_token" : token,
             "consumer_key" : POCKET_OAUTH_CONSUMER_KEY}
     content, response = _post(POCKET_OAUTH_GET_ALL_URL, data)
-    
+    #If the status isn't 200, we need to invalidate the cookie and re-auth the user:
+    if content["status"] != "200":
+        del request.session["token"]
+        request.session.modified = True
+        return shortcuts.redirect("/pocket")
+        
     reading_list_data = json.loads(response)
     reading_list = reading_list_data["list"]
     if reading_list == []:
@@ -93,4 +97,9 @@ def skipper(request):
     c = RequestContext(request, {"items" : items})
     return HttpResponse(t.render(c))
 
+
+def home(request):
+    t = loader.get_template("index.html")
+    c = RequestContext(request)
+    return HttpResponse(t.render(c))
 
