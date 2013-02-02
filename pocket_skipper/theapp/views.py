@@ -97,6 +97,11 @@ def skipper(request):
     #Make sure the item has a name, or just show the url if not:
     for item in items:
         item["fool_proof_title"] = item["resolved_title"] or item["given_title"] or item["resolved_url"] or item["given_url"]
+    
+    #Find favicons for each url:
+    for item in items:
+        parsed_url = urlparse.urlparse(item["resolved_url"])
+        item["favicon_url"] = parsed_url.scheme + r"://" + parsed_url.hostname + "/favicon.ico"
         
     
     

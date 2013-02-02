@@ -9,6 +9,7 @@
 	<meta name="author" content="">
 
 	<meta name="viewport" content="width=device-width">
+	<link rel="icon" type="image/png" href="/img/favicon.ico">
 	    
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
@@ -29,10 +30,13 @@
 	<link rel="stylesheet" href="css/style.css">
         
 	<script>
+	    var marked_as_read = new Array();
 	    
 	    function mark_as_read(what)
 	    {
 		_gaq.push(['_trackEvent', "Mark As Read", 'clicked', ""]);
+		
+		marked_as_read.push(what.id);
 		
 		//Update the image to a spinner and change text:
 		var whole_div = $("#div_" + what.id);
@@ -111,7 +115,7 @@
 	<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript>
     </span>
     
-    
+    <br><br>
     
     <div id="items">
         {% for item in items %}
@@ -125,7 +129,13 @@
 		    
 		    <span class="st_line_wrap">
 			<span class="st_line"></span>
+			
 			<div class="item_title">
+			    <span>
+				<img style="float:right" height="16px" width="16px" src="{{ item.favicon_url }}" />
+			    </span>
+			    
+			    
 			    <a href="{{ item.given_url }}" target="_blank">{{ item.fool_proof_title }}</a>
 			</div>
 		    </span>
