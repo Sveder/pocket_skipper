@@ -78,6 +78,7 @@ def skipper(request):
     data = {"access_token" : token,
             "consumer_key" : POCKET_OAUTH_CONSUMER_KEY}
     content, response = _post(POCKET_OAUTH_GET_ALL_URL, data)
+    
     #If the status isn't 200, we need to invalidate the cookie and re-auth the user:
     if content["status"] != "200":
         del request.session["token"]
@@ -92,6 +93,12 @@ def skipper(request):
     items = reading_list.values()
     #Sort by date:
     items.sort(cmp=lambda one, two: 1 if one["time_added"] < two["time_added"] else -1)
+    
+    #Make sure the item has a name, or just show the url if not:
+    for item in items:
+        item["fool_proof_title"] = item["resolved_title"] or item["given_title"] or item["resolved_url"] or item["given_url"]
+        
+    
     
     t = loader.get_template("list.html")
     c = RequestContext(request, {"items" : items})

@@ -23,6 +23,11 @@ urlpatterns = patterns('',
     
     (r'(?P<path>.*)$', 'django.views.static.serve',
                                 {'document_root': r'C:/work/pocket_skipper/code/pocket_skipper/templates'}),
+    
+    (r'^fonts/(?P<path>.*)$', 'django.views.static.serve',
+                                {'document_root': r'C:/work/pocket_skipper/code/pocket_skipper/templates/fonts'}),
+    (r'^img/(?P<path>.*)$', 'django.views.static.serve',
+                                {'document_root': r'C:/work/pocket_skipper/code/pocket_skipper/templates/img'}),
     # url(r'^pocket_skipper/', include('pocket_skipper.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

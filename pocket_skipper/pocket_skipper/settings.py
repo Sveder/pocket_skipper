@@ -114,6 +114,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+SENTRY_DSN = 'https://3f0091fdcfe744edbb692bc5667447b4:c3d2c9757b6f495b94b70cef47e7c6cd@app.getsentry.com/3974'
 
 INSTALLED_APPS = (
     'django.contrib.auth',

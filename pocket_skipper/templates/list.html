@@ -15,122 +15,8 @@
 
 	{% dajaxice_js_import %}
 	
-        <style>
-            body
-            {
-                background-image: url(/img/ricepaper2.png);
-                width: 90%;
-                margin: auto;
-            }
-            
-            #items
-            {
-                display: table;
-                
-                border-radius: 5px;
-                padding: 20px;
-            }
-            
-            #items > .item:nth-child(even)
-            {
-                background-image: url(/img/skelatal_weave.png);
-                
-            }
-            
-            #items > .item:nth-child(odd)
-            {
-                background-image: url();
-                
-            }
-            
-            .item
-            {
-                display: table-row;
-            }
-            
-            .item > *
-            {
-                display: table-cell;
-                padding: 3px 7px 3px 7px;
-            }
-            
-            .mark_as_read_text
-            {
-		vertical-align: bottom;
-		padding-left: 4px;
-            }
-	    
-	    .mark_as_read_image
-	    {
-		vertical-align: bottom;		
-	    }
-	    
-	    .mark_as_read_span
-	    {
-		cursor: pointer;
-		min-width: 140px;
-	    }
-	    
-	    /* Strike through animation */
-	    .st_line_wrap
-	    {
-		position:relative;
-		display:inline-block;        
-	    }
-	    
-	    .st_line
-	    {
-		display:inline-block;
-		position:absolute;
-		left:0;
-		top:50%;
-		width:0;
-		border-top:1px solid grey;
-		
-		transition: width 0.75s ease-in;
-		-moz-transition: width 0.75s ease-in;
-		-webkit-transition: width 0.75s ease-in;
-		-o-transition: width 0.75s ease-in;
-	    }
-	    
-	    .fav
-	    {
-		margin-left: 10px;
-		margin-right: 10px;
-		color: red;
-	    }
-	    
-	    /* Some niceties for people on phones */
-	    @media (max-width: 560px)
-	    {
-		.mark_as_read_span
-		{
-		    cursor: pointer;
-		    min-width: 0px;
-		}
-		.mark_as_read_text
-                {
-		    display: none;
-		}
-		
-		body
-		{
-		    background-image: url(/img/ricepaper2.png);
-		    width: 100%;
-		    margin: auto;
-		}
-		
-		#welcome
-		{
-		    margin-left: 10px;
-		    margin-right: 10px;
-		}
-	    }
-	    
-	    
-	    
-        </style>
-	
+	<link rel="stylesheet" href="css/style.css">
+        
 	<script>
 	    
 	    function mark_as_read(what)
@@ -158,13 +44,33 @@
 		    return;
 		}
 		
+		//Create the awesome crossing out animation
 		whole_div.find(".st_line").css("width", "100%");
 		whole_div.find("a").animate({"color" : "red"}, 750, function(){
 			whole_div.fadeOut();		    
 		    });
 	    }
-	    	    
+	    
+	    
+	    function title_hover()
+	    {
+		$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("/img/skipper_red.png")');
+		$(this).parents(".item").find(".item_title").css("background-color", '#BFFFBA');
+	    }
+	    
+	    function title_unhover()
+	    {
+		$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("/img/skipper_green.png")');
+		$(this).parents(".item").find(".item_title").css("background-color", '#fff9ed');
+	    }
+	    
+	    $(function() {
+		$(".item_title").hover(title_hover, title_unhover);
+		$(".mark_as_read_image").hover(title_hover, title_unhover);
+	    });
+	    
 	</script>
+	
 	<script type="text/javascript">
 
 	    var _gaq = _gaq || [];
@@ -181,29 +87,49 @@
 	
 </head>
 <body>
+    
+    <span id="title">Pocket Skipper.</span>
     <div id="welcome">
-        <h2>An alternate <a href="http://getpocket.com">Pocket</a> (Read it later) reading list that takes you to the actual article on the first
-	click (instead of Pocket's "article view"). Made with love by <a href="https://twitter.com/msveder">@msveder</a></h2>
+        An alternate <a href="http://getpocket.com">Pocket</a> (Read it later) reading list that takes you to the actual article on the first
+	click (instead of Pocket's "article view"). Made with love by <a href="https://twitter.com/msveder">@msveder</a>
     </div>
+    
+    
     
     <div id="items">
         {% for item in items %}
-	
-            <div class="item" id='div_{{ item.item_id }}'>
-		<span class="st_line_wrap">
-		    <span class="st_line"></span>
-		    <a href="{{ item.given_url }}" target="_blank">{{ item.resolved_title }}</a>
-                </span>
-		
-		<span class="mark_as_read_span" id="{{ item.item_id }}" onclick="mark_as_read(this);">
-		    <img src="/img/tick.png" class="mark_as_read_image"/>
-		    <span class="mark_as_read_text">Mark As Read</span>
-		</span>
-            </div>
+		<div class="item" id='div_{{ item.item_id }}'>
+		    
+		    {% if not forloop.first %}
+			<div class="arrow_wrapper">
+			    <div class="arrow up_arrow"></div>
+			</div>
+		    {% endif %}
+		    
+		    <span class="st_line_wrap">
+			<span class="st_line"></span>
+			<div class="item_title">
+			    <a href="{{ item.given_url }}" target="_blank">{{ item.fool_proof_title }}</a>
+			</div>
+		    </span>
+		    
+		    <div class="mark_as_read_span" id="{{ item.item_id }}" onclick="mark_as_read(this);">
+			<div class="mark_as_read_image"></div>
+			<!--<span class="mark_as_read_text">Mark As Read</span>-->
+		    </div>
+		    
+		    {% if not forloop.last %}
+			<div class="arrow_wrapper">
+			    <div class="arrow down_arrow"></div>
+			</div>
+		    {% endif %}
+		    
+		</div>
 	    
         {% endfor %}
         
     </div>
+    
     
     
     <div class="fav">
