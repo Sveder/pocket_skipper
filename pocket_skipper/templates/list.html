@@ -12,6 +12,17 @@
 	    
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	
+	<script type="text/javascript">
+	/* <![CDATA[ */
+	    (function() {
+		var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+		s.type = 'text/javascript';
+		s.async = true;
+		s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+		t.parentNode.insertBefore(s, t);
+	    })();
+	/* ]]> */</script>
 
 	{% dajaxice_js_import %}
 	
@@ -93,6 +104,12 @@
         An alternate <a href="http://getpocket.com">Pocket</a> (Read it later) reading list that takes you to the actual article on the first
 	click (instead of Pocket's "article view"). Made with love by <a href="https://twitter.com/msveder">@msveder</a>
     </div>
+    
+    <span class="flattr_wrapper">
+	<a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://pocket.sveder.com/"></a>
+	<noscript><a href="http://flattr.com/thing/1120608/Pocket-Skipper" target="_blank">
+	<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript>
+    </span>
     
     
     

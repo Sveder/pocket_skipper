@@ -138,17 +138,10 @@ body
     display: inline;
 }
 
-
-
-
-
-
-
-
-
-
-
-
+.flattr_wrapper
+{
+    float: right;
+}
 
 
 /* Some niceties for people on phones */
