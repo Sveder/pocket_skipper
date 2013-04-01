@@ -96,14 +96,18 @@ def skipper(request):
     
     #Make sure the item has a name, or just show the url if not:
     for item in items:
-        item["fool_proof_title"] = item["resolved_title"] or item["given_title"] or item["resolved_url"] or item["given_url"]
+        item["fool_proof_title"] = item.get("resolved_title", False) or \
+                                   item.get("given_title", False) or \
+                                   item.get("resolved_url", False) or \
+                                   item.get("given_url", "Error: Title or URL was not given")
     
     #Find favicons for each url:
     for item in items:
-        parsed_url = urlparse.urlparse(item["resolved_url"])
-        item["favicon_url"] = parsed_url.scheme + r"://" + parsed_url.hostname + "/favicon.ico"
-        
-    
+        try:
+            parsed_url = urlparse.urlparse(item["resolved_url"])
+            item["favicon_url"] = parsed_url.scheme + r"://" + parsed_url.hostname + "/favicon.ico"
+        except:
+            pass
     
     t = loader.get_template("list.html")
     c = RequestContext(request, {"items" : items})
