@@ -1,7 +1,8 @@
+from django.views.generic.base import RedirectView
 from django.conf.urls import patterns, include, url
-from django.views.generic.simple import redirect_to
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-from dajaxice.core import dajaxice_autodiscover
+from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 dajaxice_autodiscover()
 
 import settings
@@ -19,7 +20,7 @@ urlpatterns = patterns('',
     url(r'^$', 'theapp.views.home', name='home'),
     
 
-    (r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
+    url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
     
     (r'(?P<path>.*)$', 'django.views.static.serve',
                                 {'document_root': r'C:/work/pocket_skipper/code/pocket_skipper/templates'}),
@@ -29,13 +30,7 @@ urlpatterns = patterns('',
     (r'^img/(?P<path>.*)$', 'django.views.static.serve',
                                 {'document_root': r'C:/work/pocket_skipper/code/pocket_skipper/templates/img'}),
     
-    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/img/favicon.ico'}),
-
-    # url(r'^pocket_skipper/', include('pocket_skipper.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/img/favicon.ico')),
 )
+
+urlpatterns += staticfiles_urlpatterns()

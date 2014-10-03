@@ -3,7 +3,6 @@ import urllib
 import httplib2
 import traceback
 
-from django.utils import simplejson
 from dajaxice.decorators import dajaxice_register
 
 import views
@@ -29,9 +28,9 @@ def mark_as_read(request, item_id):
         if content["status"] != '200':
             raise Exception("Server rejected archive request.")
         
-        return simplejson.dumps({'id' : item_id})
+        return json.dumps({'id' : item_id})
     except Exception, e:
         traceback.print_exc()
-        return simplejson.dumps({'id' : item_id, "error" : str(e)})
+        return json.dumps({'id' : item_id, "error" : str(e)})
     
     
