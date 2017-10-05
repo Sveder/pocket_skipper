@@ -13,7 +13,12 @@
 	    
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
-	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.css" />
+
+	<script src="/js/container_logic.js"></script>
+
+
 	<script type="text/javascript">
 	/* <![CDATA[ */
 	    (function() {
@@ -31,59 +36,61 @@
         
 	<script>
 	    var marked_as_read = new Array();
-	    
+
 	    function mark_as_read(what)
 	    {
-		_gaq.push(['_trackEvent', "Mark As Read", 'clicked', ""]);
-		
-		marked_as_read.push(what.id);
-		
-		//Update the image to a spinner and change text:
-		var whole_div = $("#div_" + what.id);
-		whole_div.find("img").attr("src", "/img/spinner.gif");
-		whole_div.find(".mark_as_read_text").text("Marking");
-		
-		Dajaxice.theapp.mark_as_read(post_mark, {"item_id" : what.id});
+			_gaq.push(['_trackEvent', "Mark As Read", 'clicked', ""]);
+
+			marked_as_read.push(what.id);
+
+			//Update the image to a spinner and change text:
+			var whole_div = $("#div_" + what.id);
+			whole_div.find("img").attr("src", "/img/spinner.gif");
+			whole_div.find(".mark_as_read_text").text("Marking");
+
+			Dajaxice.theapp.mark_as_read(post_mark, {"item_id" : what.id});
 	    }
 	    
 	    function post_mark(data)
 	    {
-		var whole_div = $("#div_" + data.id);
-		if (data.error)
-		{
-		    _gaq.push(['_trackEvent', "Failed marking as read", 'clicked', ""]);
-		    alert("Problem marking item as read. Try again later.\n" + data.error);
-		    //Return everything to starting state:
-		    whole_div.find("img").attr("src", "/img/tick.png");
-		    whole_div.find(".mark_as_read_text").text("Mark As Read");
-		    return;
-		}
-		
-		//Create the awesome crossing out animation
-		whole_div.find(".st_line").css("width", "100%");
-		whole_div.find("a").animate({"color" : "red"}, 750, function(){
-			whole_div.fadeOut();		    
-		    });
+			var whole_div = $("#div_" + data.id);
+			if (data.error)
+			{
+				_gaq.push(['_trackEvent', "Failed marking as read", 'clicked', ""]);
+				alert("Problem marking item as read. Try again later.\n" + data.error);
+				//Return everything to starting state:
+				whole_div.find("img").attr("src", "/img/tick.png");
+				whole_div.find(".mark_as_read_text").text("Mark As Read");
+				return;
+			}
+
+			//Create the awesome crossing out animation
+			whole_div.find(".st_line").css("width", "100%");
+			whole_div.find("a").animate({"color" : "red"}, 750, function(){
+				whole_div.fadeOut();
+			});
 	    }
-	    
-	    
+
 	    function title_hover()
 	    {
-		$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("/img/skipper_red.png")');
-		$(this).parents(".item").find(".item_title").css("background-color", '#BFFFBA');
+			$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("/img/skipper_red.png")');
+			$(this).parents(".item").find(".item_title").css("background-color", '#BFFFBA');
 	    }
 	    
 	    function title_unhover()
 	    {
-		$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("/img/skipper_green.png")');
-		$(this).parents(".item").find(".item_title").css("background-color", '#fff9ed');
+			$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("/img/skipper_green.png")');
+			$(this).parents(".item").find(".item_title").css("background-color", '#fff9ed');
 	    }
 	    
 	    $(function() {
-		$(".item_title").hover(title_hover, title_unhover);
-		$(".mark_as_read_image").hover(title_hover, title_unhover);
+			$(".item_title").hover(title_hover, title_unhover);
+			$(".mark_as_read_image").hover(title_hover, title_unhover);
+
+			container_setup();
 	    });
-	    
+
+	    window.onbeforeunload = page_exit;
 	</script>
 	
 	<script type="text/javascript">
@@ -108,55 +115,54 @@
         An alternate <a href="http://getpocket.com">Pocket</a> (Read it later) reading list that takes you to the actual article on the first
 	click (instead of Pocket's "article view"). Made with love by <a href="https://twitter.com/msveder">@msveder</a>
     </div>
-    
-    <span class="flattr_wrapper">
-	<a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://pocket.sveder.com/"></a>
-	<noscript><a href="http://flattr.com/thing/1120608/Pocket-Skipper" target="_blank">
-	<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript>
-    </span>
-    
+
     <br><br>
-    
-    <div id="items">
-        {% for item in items %}
-		<div class="item" id='div_{{ item.item_id }}'>
-		    
-		    {% if not forloop.first %}
-			<div class="arrow_wrapper">
-			    <div class="arrow up_arrow"></div>
-			</div>
-		    {% endif %}
-		    
-		    <span class="st_line_wrap">
-			<span class="st_line"></span>
-			
-			<div class="item_title">
-			    <span>
-				<img style="float:right" height="16px" width="16px" src="{{ item.favicon_url }}" />
-			    </span>
-			    
-			    
-			    <a href="{{ item.given_url }}" target="_blank">{{ item.fool_proof_title }}</a>
-			</div>
-		    </span>
-		    
-		    <div class="mark_as_read_span" id="{{ item.item_id }}" onclick="mark_as_read(this);">
-			<div class="mark_as_read_image"></div>
-			<!--<span class="mark_as_read_text">Mark As Read</span>-->
-		    </div>
-		    
-		    {% if not forloop.last %}
-			<div class="arrow_wrapper">
-			    <div class="arrow down_arrow"></div>
-			</div>
-		    {% endif %}
-		    
+		<button onclick="add_container()">Add container</button>
+		<button onclick="save_containers()">Save</button>
+		<button onclick="load_containers()">Load</button>
+    <br><br>
+
+	<fieldset id="unsorted_container">
+		<legend>Unsorted</legend>
+
+		<div id="items">
+			{% for item in items %}
+				<div class="item" id='div_{{ item.item_id }}'>
+
+					{% if not forloop.first %}
+						<div class="arrow_wrapper">
+							<div class="arrow up_arrow"></div>
+						</div>
+					{% endif %}
+
+					<span class="st_line_wrap">
+					<span class="st_line"></span>
+
+					<div class="item_title">
+						<span>
+						<img style="float:right" height="16px" width="16px" src="{{ item.favicon_url }}" />
+						</span>
+
+
+						<a href="{{ item.given_url }}" target="_blank">{{ item.fool_proof_title }}</a>
+					</div>
+					</span>
+
+					<div class="mark_as_read_span" id="{{ item.item_id }}" onclick="mark_as_read(this);">
+					<div class="mark_as_read_image"></div>
+					</div>
+
+					{% if not forloop.last %}
+						<div class="arrow_wrapper">
+							<div class="arrow down_arrow"></div>
+						</div>
+					{% endif %}
+					</div>
+
+			{% endfor %}
+
 		</div>
-	    
-        {% endfor %}
-        
-    </div>
-    
+    </fieldset>
     
     
     <div class="fav">

@@ -110,6 +110,7 @@ WSGI_APPLICATION = 'pocket_skipper.wsgi.application'
 
 TEMPLATE_DIRS = (
     "C:/work/pocket_skipper/code/pocket_skipper/templates",
+    "C:/work/pocket_skipper/pocket_skipper/pocket_skipper/templates",
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

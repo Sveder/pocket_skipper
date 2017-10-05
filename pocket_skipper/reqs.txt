@@ -1,0 +1,5 @@
+django<1.7
+django-dajaxice
+raven
+httplib2
+pyrebase
