@@ -1,11 +1,11 @@
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import httplib2
 import traceback
 
 from dajaxice.decorators import dajaxice_register
 
-import views
+from . import views
 
 @dajaxice_register
 def mark_as_read(request, item_id):
@@ -24,13 +24,11 @@ def mark_as_read(request, item_id):
                "X-Accept" : "application/json"}
     
         http = httplib2.Http()
-        content, response = http.request(views.POCKET_OAUTH_ARCHIVE_URL % urllib.urlencode(data), "GET", headers=headers)
+        content, response = http.request(views.POCKET_OAUTH_ARCHIVE_URL % urllib.parse.urlencode(data), "GET", headers=headers)
         if content["status"] != '200':
             raise Exception("Server rejected archive request.")
         
         return json.dumps({'id' : item_id})
-    except Exception, e:
+    except Exception as e:
         traceback.print_exc()
         return json.dumps({'id' : item_id, "error" : str(e)})
-    
-    

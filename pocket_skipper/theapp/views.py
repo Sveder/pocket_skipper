@@ -1,8 +1,8 @@
 import json
 import pprint
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import httplib2
-import urlparse
+import urllib.parse
 import traceback
 
 import django.shortcuts as shortcuts
@@ -23,7 +23,7 @@ def _log(message, _pprint=False, _traceback=False):
     if _pprint:
         pprint.pprint(message)
     else:
-        print message
+        print(message)
     
     if _traceback:
         traceback.print_exc()
@@ -33,7 +33,7 @@ def _post(url, data):
                "X-Accept" : "application/x-www-form-urlencoded"}
     
     http = httplib2.Http()
-    content, response = http.request(url, "POST", urllib.urlencode(data), headers=headers)
+    content, response = http.request(url, "POST", urllib.parse.urlencode(data), headers=headers)
     return content, response
 
 
@@ -44,7 +44,7 @@ def landing(request):
     
     content, response = _post(POCKET_OAUTH_REQUEST_URL, data)
     
-    pocket_code = dict(urlparse.parse_qsl(response))["code"]
+    pocket_code = dict(urllib.parse.parse_qsl(response))["code"]
     request.session["pocket_code"] = pocket_code
     auth_url = "https://getpocket.com/auth/authorize?request_token=%s&redirect_uri=%s" % (pocket_code, redirect_url)
     return shortcuts.redirect(auth_url)
@@ -65,7 +65,7 @@ def skipper(request):
                     "consumer_key" : POCKET_OAUTH_CONSUMER_KEY}
             content, response = _post(POCKET_OAUTH_AUTHORIZE_URL, data)
             
-            actual_response = dict(urlparse.parse_qsl(response))
+            actual_response = dict(urllib.parse.parse_qsl(response))
             token = actual_response["access_token"]
             username = actual_response["username"]
             
@@ -90,7 +90,7 @@ def skipper(request):
     if reading_list == []:
         reading_list = {}
     
-    items = reading_list.values()
+    items = list(reading_list.values())
     #Sort by date:
     items.sort(cmp=lambda one, two: 1 if one["time_added"] < two["time_added"] else -1)
     
@@ -104,7 +104,7 @@ def skipper(request):
     #Find favicons for each url:
     for item in items:
         try:
-            parsed_url = urlparse.urlparse(item["resolved_url"])
+            parsed_url = urllib.parse.urlparse(item["resolved_url"])
             item["favicon_url"] = parsed_url.scheme + r"://" + parsed_url.hostname + "/favicon.ico"
         except:
             pass
@@ -118,4 +118,3 @@ def home(request):
     t = loader.get_template("index.html")
     c = RequestContext(request)
     return HttpResponse(t.render(c))
-
