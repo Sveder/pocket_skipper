@@ -1,4 +1,29 @@
-# Django settings for pocket_skipper project.
+import os
+
+# import sentry_sdk
+# from sentry_sdk.integrations.django import DjangoIntegration
+#
+# sentry_sdk.init(
+#     dsn="https://examplePublicKey@o0.ingest.sentry.io/0",
+#     integrations=[DjangoIntegration()],
+#
+#     # Set traces_sample_rate to 1.0 to capture 100%
+#     # of transactions for performance monitoring.
+#     # We recommend adjusting this value in production,
+#     traces_sample_rate=1.0,
+#
+#     # If you wish to associate users to errors (assuming you are using
+#     # django.contrib.auth) you may enable sending PII data.
+#     send_default_pii=True,
+#
+#     # By default the SDK will try to use the SENTRY_RELEASE
+#     # environment variable, or infer a git commit
+#     # SHA as release, however you may want to set
+#     # something more human-readable.
+#     # release="myapp@1.0.0",
+# )
+
+# SENTRY_DSN = 'https://3f0091fdcfe744edbb692bc5667447b4:c3d2c9757b6f495b94b70cef47e7c6cd@app.getsentry.com/3974'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -55,18 +80,22 @@ MEDIA_ROOT = ''
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = ''
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
-
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
+# Absolute path to the directory static files should be collected to.
+# Don't put anything in this directory yourself; store your static files
+# in apps' "static/" subdirectories and in STATICFILES_DIRS.
+# Example: "/home/media/media.lawrence.com/static/"
+STATIC_ROOT = '/tmp/staticfiles/'
+
+PROJECT_PATH = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
+print(PROJECT_PATH)
+
 # Additional locations of static files
 STATICFILES_DIRS = (
+    os.path.join(PROJECT_PATH, 'staticfiles/'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -77,28 +106,19 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-    'dajaxice.finders.DajaxiceFinder',
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'pp18fue@sp@3h%*a#68=xizqa#6(504e)&amp;thwt4_su%9&amp;xr7#$'
+DEFAULT_SECRET_KEY = """vHZ-uAEt4SSXrnVDZr9!BE8E96dgRTvJWu%m7-Me_!?Q%cYw?8dExDJQ5vBA"""
+SECRET_KEY = os.environ.get('PS_DJANGO_SECRET_KEY', DEFAULT_SECRET_KEY)
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    'django.template.loaders.eggs.Loader',
-)
-
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
@@ -108,15 +128,13 @@ ROOT_URLCONF = 'pocket_skipper.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'pocket_skipper.wsgi.application'
 
-TEMPLATE_DIRS = (
-    "C:/work/pocket_skipper/code/pocket_skipper/templates",
-    "C:/work/pocket_skipper/pocket_skipper/pocket_skipper/templates",
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
-SENTRY_DSN = 'https://3f0091fdcfe744edbb692bc5667447b4:c3d2c9757b6f495b94b70cef47e7c6cd@app.getsentry.com/3974'
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(PROJECT_PATH, 'templates/')],
+        'APP_DIRS': True,
+    }
+]
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -125,9 +143,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    "dajaxice",
-    'raven.contrib.django',
+
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -174,5 +190,3 @@ LOGGING = {
         },
     }
 }
-
-DAJAXICE_MEDIA_PREFIX="dajaxice"

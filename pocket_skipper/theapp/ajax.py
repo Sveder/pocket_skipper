@@ -3,11 +3,10 @@ import urllib.request, urllib.parse, urllib.error
 import httplib2
 import traceback
 
-from dajaxice.decorators import dajaxice_register
 
 from . import views
 
-@dajaxice_register
+
 def mark_as_read(request, item_id):
     try:
         actions = [{"action" : "archive",
