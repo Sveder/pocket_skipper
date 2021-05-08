@@ -12,8 +12,9 @@
 	<meta name="viewport" content="width=device-width">
 	<link rel="icon" type="image/png" href="{% static '/img/favicon.ico' %}">
 	    
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.css" />
 
@@ -48,7 +49,15 @@
 			whole_div.find("img").attr("src", "{% static '/img/spinner.gif' %}");
 			whole_div.find(".mark_as_read_text").text("Marking");
 
-			//Dajaxice.theapp.mark_as_read(post_mark, {"item_id" : what.id});
+			$.ajax({
+				method:"POST",
+				url: "/v1/mark_as_read",
+				data: { item_id: what.id }
+			}).done(function( msg ) {
+				post_mark(JSON.parse(msg));
+			}).error(function( msg ) {
+				post_mark(JSON.parse(msg));
+			});
 	    }
 	    
 	    function post_mark(data)

@@ -5,6 +5,7 @@ import urllib.request, urllib.parse, urllib.error
 
 import requests
 import django.shortcuts as shortcuts
+from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, Context, loader
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 
@@ -136,3 +137,38 @@ def skipper(request):
 def home(_):
     t = loader.get_template("index.html")
     return HttpResponse(t.render())
+
+
+@csrf_exempt
+def mark_as_read(request):
+    if request.method != 'POST':
+        raise Exception('Only post is supported.')
+
+    item_id = request.POST.get('item_id')
+    if not item_id:
+        raise Exception('item_id must be provided.')
+
+    try:
+        actions = [{
+            "action": "archive",
+            "item_id": item_id
+        }]
+        action_json = json.dumps(actions)
+
+        token = request.session["token"]
+
+        data = {
+            "actions": action_json,
+            "access_token": token,
+            "consumer_key": POCKET_OAUTH_CONSUMER_KEY
+        }
+
+        response, status_code = _post(POCKET_OAUTH_ARCHIVE_URL, data=data)
+        if status_code != 200:
+            raise Exception("Server rejected archive request.")
+
+        return HttpResponse(json.dumps({'id': item_id}))
+
+    except Exception as e:
+        traceback.print_exc()
+        return HttpResponse(json.dumps({'id': item_id, "error": str(e)}))

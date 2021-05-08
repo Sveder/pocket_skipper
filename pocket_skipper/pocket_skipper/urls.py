@@ -17,19 +17,9 @@ urlpatterns = [
     
     path('pocket', views.landing, name='landing'),
     path('skipper', views.skipper, name='skipper'),
-    
-    path('', views.home, name='home'),
-    
+    path('v1/mark_as_read', views.mark_as_read, name='mark_as_read'),
 
-    
-    # (r'(?P<path>.*)$', 'django.views.static.serve',
-    #                             {'document_root': r'C:/work/pocket_skipper/pocket_skipper/pocket_skipper/templates'}),
-    #
-    # (r'^fonts/(?P<path>.*)$', 'django.views.static.serve',
-    #                             {'document_root': r'C:/work/pocket_skipper/pocket_skipper/pocket_skipper/templates/fonts'}),
-    # (r'^img/(?P<path>.*)$', 'django.views.static.serve',
-    #                             {'document_root': r'C:/work/pocket_skipper/pocket_skipper/pocket_skipper/templates/img'}),
-    #
+    path('', views.home, name='home'),
     # url(r'^favicon\.ico$', RedirectView.as_view(url='/img/favicon.ico')),
 ]
 
