@@ -1,4 +1,5 @@
-{% load dajaxice_templatetags %}
+{% load static %}
+
 <!doctype html>
 <head>
 	<meta charset="utf-8">
@@ -9,14 +10,15 @@
 	<meta name="author" content="">
 
 	<meta name="viewport" content="width=device-width">
-	<link rel="icon" type="image/png" href="/img/favicon.ico">
+	<link rel="icon" type="image/png" href="{% static '/img/favicon.ico' %}">
 	    
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.css" />
 
-	<script src="/js/container_logic.js"></script>
+	<script src="{% static '/js/container_logic.js' %}"></script>
 
 
 	<script type="text/javascript">
@@ -30,9 +32,8 @@
 	    })();
 	/* ]]> */</script>
 
-	{% dajaxice_js_import %}
-	
-	<link rel="stylesheet" href="css/style.css">
+
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
         
 	<script>
 	    var marked_as_read = new Array();
@@ -45,10 +46,18 @@
 
 			//Update the image to a spinner and change text:
 			var whole_div = $("#div_" + what.id);
-			whole_div.find("img").attr("src", "/img/spinner.gif");
+			whole_div.find("img").attr("src", "{% static '/img/spinner.gif' %}");
 			whole_div.find(".mark_as_read_text").text("Marking");
 
-			Dajaxice.theapp.mark_as_read(post_mark, {"item_id" : what.id});
+			$.ajax({
+				method:"POST",
+				url: "/v1/mark_as_read",
+				data: { item_id: what.id }
+			}).done(function( msg ) {
+				post_mark(JSON.parse(msg));
+			}).error(function( msg ) {
+				post_mark(JSON.parse(msg));
+			});
 	    }
 	    
 	    function post_mark(data)
@@ -59,7 +68,7 @@
 				_gaq.push(['_trackEvent', "Failed marking as read", 'clicked', ""]);
 				alert("Problem marking item as read. Try again later.\n" + data.error);
 				//Return everything to starting state:
-				whole_div.find("img").attr("src", "/img/tick.png");
+				whole_div.find("img").attr("src", "{% static '/img/tick.png' %}");
 				whole_div.find(".mark_as_read_text").text("Mark As Read");
 				return;
 			}
@@ -73,13 +82,13 @@
 
 	    function title_hover()
 	    {
-			$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("/img/skipper_red.png")');
+			$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("{% static '/img/skipper_red.png' %}")');
 			$(this).parents(".item").find(".item_title").css("background-color", '#BFFFBA');
 	    }
 	    
 	    function title_unhover()
 	    {
-			$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("/img/skipper_green.png")');
+			$(this).parents(".item").find(".mark_as_read_image").css("background-image", 'url("{% static '/img/skipper_green.png' %}")');
 			$(this).parents(".item").find(".item_title").css("background-color", '#fff9ed');
 	    }
 	    
