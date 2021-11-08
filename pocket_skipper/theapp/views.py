@@ -40,8 +40,6 @@ def _post(url, data):
         data=data,
         headers=headers
     )
-    _log('-->' + res.text)
-    _log(res.status_code)
     return res.text, res.status_code
 
 

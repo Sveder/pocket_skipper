@@ -1,0 +1,172 @@
+@font-face
+{
+    font-family: nilland;
+    src: url('/static/fonts/nilland.ttf');
+}
+
+body
+{
+    background-color: #a3bba6;
+    width: 90%;
+    margin: auto;
+}
+
+#items
+{
+    padding: 20px;
+}
+
+.item_title
+{
+    background-color: #fff9ed;
+    border: 2px solid #3a5863;
+    border-radius: 7px;
+
+    padding: 2px 5px;
+    margin: 0px 0px 0px 3px;
+}
+
+.item_title:hover
+{
+    background-color: #BFFFBA;
+}
+
+.arrow_wrapper
+{
+    width: 22%;
+    margin: 0 auto;    
+}
+
+.arrow
+{
+    width: 15px;
+    height: 6px;
+    background-size: 15px 6px;
+}
+
+.down_arrow
+{
+    background-image: url("/static/img/down_arrow.png");
+    
+    position: relative;
+    top: -3px;
+}
+
+.up_arrow
+{
+    background-image: url("/static/img/up_arrow.png");
+    
+    /*position: relative;
+    bottom: -9px;*/
+}
+
+
+
+
+#title
+{
+    font-size: 60px;
+    font-weight: 900;
+    font-family: nilland;
+    color: #c95838;
+    
+}
+
+.mark_as_read_text
+{
+    padding-left: 4px;
+}
+
+.mark_as_read_image
+{
+    background-image: url("/static/img/skipper_green.png");
+    background-size: 38px 30px;
+    width: 38px;
+    height: 30px;
+    z-index: 999;
+    
+    position: relative;
+    left: -6px;
+    top: -1px;
+    
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+.mark_as_read_span
+{
+    display: inline;
+    cursor: pointer;
+    min-width: 140px;
+}
+
+/* Strike through animation */
+.st_line_wrap
+{
+    position:relative;
+    display:inline-block;
+    width: 80%;
+}
+
+.st_line
+{
+    display:inline-block;
+    position:absolute;
+    left:0;
+    top:50%;
+    width:0;
+    border-top:1px solid grey;
+    
+    transition: width 0.75s ease-in;
+    -moz-transition: width 0.75s ease-in;
+    -webkit-transition: width 0.75s ease-in;
+    -o-transition: width 0.75s ease-in;
+}
+
+.fav
+{
+    margin-left: 10px;
+    margin-right: 10px;
+    color: red;
+}
+
+#welcome
+{
+    color: #fff9ed;
+    font-size: 20px;
+    display: inline;
+}
+
+.flattr_wrapper
+{
+    float: right;
+}
+
+
+/* Some niceties for people on phones */
+@media (max-width: 560px)
+{
+    .mark_as_read_span
+    {
+	cursor: pointer;
+	min-width: 0px;
+    }
+    .mark_as_read_text
+    {
+	display: none;
+    }
+    
+    body
+    {
+	background-color: #a3bba6;
+	width: 100%;
+	margin: auto;
+    }
+    
+    #welcome
+    {
+	margin-left: 10px;
+	margin-right: 10px;
+    }
+}

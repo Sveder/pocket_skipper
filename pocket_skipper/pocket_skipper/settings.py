@@ -1,29 +1,21 @@
 import os
 
-# import sentry_sdk
-# from sentry_sdk.integrations.django import DjangoIntegration
-#
-# sentry_sdk.init(
-#     dsn="https://examplePublicKey@o0.ingest.sentry.io/0",
-#     integrations=[DjangoIntegration()],
-#
-#     # Set traces_sample_rate to 1.0 to capture 100%
-#     # of transactions for performance monitoring.
-#     # We recommend adjusting this value in production,
-#     traces_sample_rate=1.0,
-#
-#     # If you wish to associate users to errors (assuming you are using
-#     # django.contrib.auth) you may enable sending PII data.
-#     send_default_pii=True,
-#
-#     # By default the SDK will try to use the SENTRY_RELEASE
-#     # environment variable, or infer a git commit
-#     # SHA as release, however you may want to set
-#     # something more human-readable.
-#     # release="myapp@1.0.0",
-# )
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
-# SENTRY_DSN = 'https://3f0091fdcfe744edbb692bc5667447b4:c3d2c9757b6f495b94b70cef47e7c6cd@app.getsentry.com/3974'
+sentry_sdk.init(
+    dsn="https://00fb3cafff7e43db90700c43e7eb4cc8@o630775.ingest.sentry.io/5755244",
+    integrations=[DjangoIntegration()],
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
