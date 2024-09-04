@@ -129,6 +129,12 @@
 		<button onclick="add_container()">Add container</button>
 		<button onclick="save_containers()">Save</button>
 		<button onclick="load_containers()">Load</button>
+		<button onclick="stopSpeech()">Stop Speech</button>
+		<script>
+		function stopSpeech() {
+			window.speechSynthesis.cancel();
+		}
+		</script>
     <br><br>
 
 	<fieldset id="unsorted_container">
@@ -154,6 +160,67 @@
 
 
 						<a href="{{ item.given_url }}" target="_blank">{{ item.fool_proof_title }}</a>
+						<button class="read-aloud-button" id="read_{{ item.item_id }}" data-item-id="{{ item.item_id }}" data-title="{{ item.fool_proof_title }}">Read Aloud</button>
+					<script>
+						function readAloud(url, title) {
+							// Use a CORS proxy service (example: cors-anywhere)
+							const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+							
+							// Function to extract main content from HTML
+							function extractMainContent(html) {
+								const parser = new DOMParser();
+								const doc = parser.parseFromString(html, 'text/html');
+								
+								// Remove script tags from body
+								doc.body.querySelectorAll('script').forEach(el => el.remove());
+								
+								// Try to find main content (adjust selectors as needed)
+								const mainContent = 
+									doc.body.querySelector('article') || 
+									doc.body.querySelector('main') || 
+									doc.body.querySelector('.content') || 
+									doc.body;
+								
+								return mainContent ? mainContent.textContent.trim() : doc.body.textContent.trim();
+							}
+							
+							// Fetch the article content from the given URL through the proxy
+							fetch(proxyUrl + url)
+								.then(response => response.text())
+								.then(html => {
+									// Extract text content from HTML (basic implementation)
+									html = extractMainContent(html);
+									const tempDiv = document.createElement('div');
+									tempDiv.innerHTML = html;
+									const content = tempDiv.textContent || tempDiv.innerText || "";
+									
+									// Create a new SpeechSynthesisUtterance object
+									const speech = new SpeechSynthesisUtterance();
+									
+									// Set the text to be read (title + content)
+									speech.text = `${title}. ${content}`;
+									
+									// Set the speech rate to make it faster (1.5 times normal speed)
+									speech.rate = 4;
+									speech.lang = "he-IL";
+									// Use the speech synthesis API to read the text
+									window.speechSynthesis.speak(speech);
+								})
+								.catch(error => console.error('Error fetching article content:', error));
+						}
+
+						// Add click event listeners to all "Read Aloud" buttons
+						document.addEventListener('DOMContentLoaded', () => {
+							const readAloudButtons = document.querySelectorAll('.read-aloud-button');
+							readAloudButtons.forEach(button => {
+								button.addEventListener('click', (event) => {
+									const url = event.target.closest('.item_title').querySelector('a').href;
+									const title = event.target.dataset.title;
+									readAloud(url, title);
+								});
+							});
+						});
+					</script>
 					</div>
 					</span>
 
