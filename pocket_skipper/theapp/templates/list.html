@@ -201,8 +201,9 @@
 									speech.text = `${title}. ${content}`;
 									
 									// Set the speech rate to make it faster (1.5 times normal speed)
-									speech.rate = 4;
-									speech.lang = "he-IL";
+									speech.rate = 2;
+									
+									//speech.lang = "he-IL";
 									// Use the speech synthesis API to read the text
 									window.speechSynthesis.speak(speech);
 								})
