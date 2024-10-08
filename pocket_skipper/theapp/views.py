@@ -1,3 +1,4 @@
+import os
 import json
 import pprint
 import traceback
@@ -13,9 +14,9 @@ from django.http import HttpResponse, Http404, HttpResponseBadRequest
 POCKET_OAUTH_REQUEST_URL = "https://getpocket.com/v3/oauth/request"
 POCKET_OAUTH_AUTHORIZE_URL = "https://getpocket.com/v3/oauth/authorize"
 POCKET_OAUTH_GET_ALL_URL = "https://getpocket.com/v3/get"
-POCKET_OAUTH_ARCHIVE_URL = "https://getpocket.com/v3/send?%s"
+POCKET_OAUTH_ARCHIVE_URL = "https://getpocket.com/v3/send?"
 
-POCKET_OAUTH_CONSUMER_KEY = "11798-8b31a6c8596a31af57059a0e"
+POCKET_OAUTH_CONSUMER_KEY = ""
 
 POCKET_REDIRECT_URL = "http://%s/skipper" # % domain_url
 
@@ -100,18 +101,26 @@ def skipper(request):
         del request.session["token"]
         request.session.modified = True
         return shortcuts.redirect("/pocket")
-        
+    
     reading_list_data = json.loads(response)
     reading_list = reading_list_data["list"]
     if reading_list == []:
         reading_list = {}
     
     items = list(reading_list.values())
-
+    items = [item for item in items if "time_added" in item]
+    
     # Sort by date:
     items.sort(key=lambda x: x["time_added"])
     items.reverse()
-    
+    try:
+        if os.path.exists('archived.json'):
+            archived = json.load(open('archived.json'))
+            items = [item for item in items if item["item_id"] not in archived]
+
+    except Exception as e:
+        print("Failed to load archived items.")
+
     # Make sure the item has a name, or just show the url if not:
     for item in items:
         item["fool_proof_title"] = item.get("resolved_title", False) or \
@@ -145,6 +154,18 @@ def mark_as_read(request):
     item_id = request.POST.get('item_id')
     if not item_id:
         raise Exception('item_id must be provided.')
+
+    try:
+        if os.path.exists('archived.json'):
+            archived = json.load(open('archived.json'))
+            archived.append(item_id)
+            json.dump(archived, open('archived.json', 'w'))
+        else:
+            archived = [item_id]
+            json.dump(archived, open('archived.json', 'w'))
+
+    except Exception as e:
+        print("Failed to load archived items.")
 
     try:
         actions = [{
