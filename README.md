@@ -1,3 +1,5 @@
+ARCHIVED. RIP pocket ;(
+
 pocket_skipper
 ==============
 
